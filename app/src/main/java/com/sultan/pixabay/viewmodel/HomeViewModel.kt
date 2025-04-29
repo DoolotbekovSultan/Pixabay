@@ -1,10 +1,10 @@
 package com.sultan.pixabay.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sultan.pixabay.model.core.Either
 import com.sultan.pixabay.model.models.ImageResponse
 import com.sultan.pixabay.repository.ImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,15 +19,19 @@ class HomeViewModel @Inject constructor(
     private val _image = MutableLiveData<ImageResponse>()
     val image : LiveData<ImageResponse> = _image
 
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage : LiveData<String> = _errorMessage
+
+
     fun getImages(q : String) {
         viewModelScope.launch {
-            try {
-                val response = repository.getImages(q)
-                Log.e("ololo", "getImages: Response = ${response}")
-                _image.value = response
-            } catch (e : Exception) {
-                Log.e("ololo", "getImages: Error ${e.message}")
-                e.printStackTrace()
+            when (val response = repository.getImages(q)) {
+                is Either.Left -> {
+                    _errorMessage.value = response.error
+                }
+                is Either.Right -> {
+                    _image.value = response.success
+                }
             }
         }
     }

@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import com.sultan.pixabay.R
 import com.sultan.pixabay.databinding.FragmentHomeBinding
@@ -32,7 +33,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getImages(q = "image")
+        viewModel.getImages(q = "")
         initialize()
     }
 
@@ -46,9 +47,12 @@ class HomeFragment : Fragment() {
         binding.imageRecyclerView.adapter = adapter
     }
 
-    private fun initializeObserver() {
-        viewModel.image.observe(viewLifecycleOwner) { images ->
+    private fun initializeObserver() = with(viewModel){
+        image.observe(viewLifecycleOwner) { images ->
             adapter.submitList(images.hits)
+        }
+        errorMessage.observe(viewLifecycleOwner) { errorMessage ->
+            Toast.makeText(requireContext(), errorMessage.toString(), Toast.LENGTH_SHORT).show()
         }
     }
 

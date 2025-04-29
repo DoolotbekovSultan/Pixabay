@@ -1,5 +1,6 @@
 package com.sultan.pixabay.model.service
 
+import com.sultan.pixabay.model.core.Either
 import com.sultan.pixabay.model.models.ImageResponse
 import jakarta.inject.Inject
 import retrofit2.http.GET
